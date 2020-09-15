@@ -17,7 +17,7 @@ class Game
 {
 	float accumulatedDeltaTime;
 
-	std::vector<PhysObject> physObjects;
+	std::vector<PhysObject> PhysObjects;
 
 	static collisionMap collisionCheckers;
 	static depenetrationMap depenetrationFuncs;

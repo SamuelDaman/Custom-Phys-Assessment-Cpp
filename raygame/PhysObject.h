@@ -4,7 +4,7 @@
 
 #include "shapes.h"
 
-class physObject
+class PhysObject
 {
 	glm::vec2 forces;
 
@@ -14,7 +14,7 @@ public:
 	glm::vec2 vel;
 	float mass;
 	collider shape;
-	physObject();
+	PhysObject();
 	void tickPhysics(float deltaTime);
 	void draw() const;
 	void addForce(glm::vec2 force);
