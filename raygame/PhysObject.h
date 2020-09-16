@@ -6,19 +6,19 @@
 
 class PhysObject
 {
-	glm::vec2 forces;
+	vec2 forces;
 
 public:
 
-	glm::vec2 pos;
-	glm::vec2 vel;
+	vec2 pos;
+	vec2 vel;
 	float mass;
 	collider shape;
 	PhysObject();
 	void tickPhysics(float deltaTime);
 	void draw() const;
-	void addForce(glm::vec2 force);
-	void addImpulse(glm::vec2 impulse);
-	void addAccel(glm::vec2 accel);
-	void addVelocityChange(glm::vec2 velChng);
+	void addForce(vec2 force);
+	void addImpulse(vec2 impulse);
+	void addAccel(vec2 accel);
+	void addVelocityChange(vec2 velChng);
 };

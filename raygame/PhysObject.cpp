@@ -1,45 +1,59 @@
-#include "shapes.h"
+#include "physObject.h"
 
-#include "glm/glm.hpp"
+#include "raylib.h"
 
-bool checkCircleCircle(glm::vec2 posA, circle circleA, glm::vec2 posB, circle circleB)
+PhysObject::PhysObject()
 {
-	float distance = glm::length(posA - posB);
+	pos = vec2{ 0,0 };
+	vel = vec2{ 0,0 };
+	forces = vec2{ 0,0 };
 
-	float sum = circleA.radius + circleB.radius;
-
-	return distance < sum;
+	mass = 1.0f;
+	shape = { ShapeType::CIRCLE, circle{ 10.0f } };
 }
 
-bool checkCircleCircle(glm::vec2 posA, collider circleA, glm::vec2 posB, collider circleB)
+void PhysObject::tickPhysics(float deltaTime)
 {
-	return checkCircleCircle(posA, circleA.circleData, posB, circleB.circleData);
+	vel += forces * deltaTime;
+	forces = { 0, 0 };
+
+	pos += vel * deltaTime;
 }
 
-glm::vec2 depenetrateCircleCircle(glm::vec2 posA, circle circleA, glm::vec2 posB, circle circleB, float& pen)
+void PhysObject::draw() const
 {
-	float dist = glm::length(posA - posB);
-	float sum = circleA.radius + circleB.radius;
-
-	pen = sum - dist;
-
-	return glm::normalize(posA - posB);
+	switch (shape.colliderShape)
+	{
+	case ShapeType::NONE:
+		DrawPixel((int)pos.x, (int)pos.y, RED);
+		break;
+	case ShapeType::CIRCLE:
+		DrawCircleLines((int)pos.x, (int)pos.y, shape.circleData.radius, RED);
+		break;
+	case ShapeType::AABB:
+		DrawRectangleLines((int)pos.x - shape.boxData.bounds.x, (int)pos.y - shape.boxData.bounds.y, shape.boxData.bounds.x * 2, shape.boxData.bounds.y * 2, RED);
+		break;
+	default:
+		break;
+	}
 }
 
-glm::vec2 depenetrateCircleCircle(glm::vec2 posA, collider circleA, glm::vec2 posB, collider circleB, float& pen)
+void PhysObject::addForce(vec2 force)
 {
-	return depenetrateCircleCircle(posA, circleA.circleData, posB, circleB.circleData, pen);
+	forces += force / mass;
 }
 
-void resolveCollision(glm::vec2 posA, glm::vec2 velA, float massA,
-	glm::vec2 posB, glm::vec2 velB, float massB,
-	float elasticity, glm::vec2 colNormal, glm::vec2* dst)
+void PhysObject::addImpulse(vec2 impulse)
 {
-	glm::vec2 relVel = velA - velB;
+	vel += impulse / mass;
+}
 
-	float impulseMag = glm::dot(-(-1.0f + elasticity) * relVel, colNormal) /
-		glm::dot(colNormal, colNormal * (1 / massA + 1 / massB));
+void PhysObject::addAccel(vec2 accel)
+{
+	forces += accel;
+}
 
-	dst[0] = velA + (impulseMag / massA) * colNormal;
-	dst[1] = velB - (impulseMag / massB) * colNormal;
+void PhysObject::addVelocityChange(vec2 velChng)
+{
+	vel += velChng;
 }

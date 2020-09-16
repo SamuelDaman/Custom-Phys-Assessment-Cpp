@@ -14,6 +14,8 @@ collisionMap setupCollisionChecks()
 
 	map[(collisionPair)(ShapeType::CIRCLE | ShapeType::CIRCLE)] = checkCircleCircle;
 
+	map[(collisionPair)(ShapeType::AABB | ShapeType::AABB)] = checkBoxBox;
+
 	return map;
 }
 
@@ -22,6 +24,8 @@ depenetrationMap setupDepenetrationFuncs()
 	depenetrationMap map;
 
 	map[(collisionPair)(ShapeType::CIRCLE | ShapeType::CIRCLE)] = depenetrateCircleCircle;
+
+	map[(collisionPair)(ShapeType::AABB | ShapeType::AABB)] = depenetrateBoxBox;
 
 	return map;
 }
@@ -57,8 +61,10 @@ bool Game::tick()
 		PhysObject spawn;
 		spawn.pos = { cursorPos.x, cursorPos.y };
 		spawn.mass = (rand() % 10) + 1;
-		spawn.shape.circleData.radius = spawn.mass;
-		spawn.addImpulse({ 100,0 });
+		//spawn.shape.circleData.radius = spawn.mass;
+		spawn.shape.colliderShape = ShapeType::AABB;
+		spawn.shape.boxData.bounds = { spawn.mass, spawn.mass };
+		spawn.addImpulse({ 0, 0 });
 
 		PhysObjects.push_back(spawn);
 	}

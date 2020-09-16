@@ -7,10 +7,10 @@
 
 using collisionPair = uint8_t;
 
-using collisionFunc = bool(*)(glm::vec2, collider, glm::vec2, collider);
+using collisionFunc = bool(*)(vec2, collider, vec2, collider);
 using collisionMap = std::unordered_map<collisionPair, collisionFunc>;
 
-using depenetrationFunc = glm::vec2(*)(glm::vec2, collider, glm::vec2, collider, float&);
+using depenetrationFunc = vec2(*)(vec2, collider, vec2, collider, float&);
 using depenetrationMap = std::unordered_map<collisionPair, depenetrationFunc>;
 
 class Game 
