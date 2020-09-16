@@ -17,6 +17,8 @@ void PhysObject::tickPhysics(float deltaTime)
 	vel += forces * deltaTime;
 	forces = { 0, 0 };
 
+	vel /= 1.001f;
+
 	pos += vel * deltaTime;
 }
 

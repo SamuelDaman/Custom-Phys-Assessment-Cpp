@@ -13,7 +13,7 @@ collisionMap setupCollisionChecks()
 	collisionMap map;
 
 	map[(collisionPair)(ShapeType::CIRCLE | ShapeType::CIRCLE)] = checkCircleCircle;
-
+	map[(collisionPair)(ShapeType::CIRCLE | ShapeType::AABB)] = checkCircleBox;
 	map[(collisionPair)(ShapeType::AABB | ShapeType::AABB)] = checkBoxBox;
 
 	return map;
@@ -24,7 +24,7 @@ depenetrationMap setupDepenetrationFuncs()
 	depenetrationMap map;
 
 	map[(collisionPair)(ShapeType::CIRCLE | ShapeType::CIRCLE)] = depenetrateCircleCircle;
-
+	map[(collisionPair)(ShapeType::CIRCLE | ShapeType::AABB)] = depenetrateCircleBox;
 	map[(collisionPair)(ShapeType::AABB | ShapeType::AABB)] = depenetrateBoxBox;
 
 	return map;
@@ -60,13 +60,34 @@ bool Game::tick()
 
 		PhysObject spawn;
 		spawn.pos = { cursorPos.x, cursorPos.y };
-		spawn.mass = (rand() % 10) + 1;
-		//spawn.shape.circleData.radius = spawn.mass;
-		spawn.shape.colliderShape = ShapeType::AABB;
-		spawn.shape.boxData.bounds = { spawn.mass, spawn.mass };
-		spawn.addImpulse({ 0, 0 });
+		spawn.mass = (rand() % 10) + 5;
+
+		if (rand() % 2 == 0)
+		{
+			spawn.shape.circleData.radius = spawn.mass + 4;
+		}
+		else
+		{
+			spawn.shape.colliderShape = ShapeType::AABB;
+			spawn.shape.boxData.bounds = { spawn.mass + 4, spawn.mass + 4 };
+		}
+		spawn.addImpulse({ (rand() % 501) - 250, (rand() % 501) - 250 });
 
 		PhysObjects.push_back(spawn);
+	}
+
+	if (IsMouseButtonPressed(1))
+	{
+		auto cursorPos = GetMousePosition();
+
+		for (auto& obj : PhysObjects)
+		{
+			auto* object = &obj;
+			if (glm::length(vec2(cursorPos.x, cursorPos.y) - object->pos) < 500)
+			{
+				obj.addImpulse(glm::normalize(object->pos - vec2(cursorPos.x, cursorPos.y)) * 500.0f);
+			}
+		}
 	}
 
 	return !WindowShouldClose();
@@ -111,6 +132,7 @@ void Game::tickPhysics()
 				second->vel = resImpulses[1];
 			}
 		}
+		lhs.addAccel(vec2(0, 98));
 	}
 
 	for (auto& obj : PhysObjects)

@@ -1,6 +1,7 @@
 #include "shapes.h"
 
 #include "glm/glm.hpp"
+#include "glm/gtx/norm.hpp"
 
 bool checkCircleCircle(vec2 posA, circle circleA, vec2 posB, circle circleB)
 {
@@ -14,6 +15,30 @@ bool checkCircleCircle(vec2 posA, circle circleA, vec2 posB, circle circleB)
 bool checkCircleCircle(vec2 posA, collider circleA, vec2 posB, collider circleB)
 {
 	return checkCircleCircle(posA, circleA.circleData, posB, circleB.circleData);
+}
+
+bool checkCircleBox(vec2 posA, circle circleA, vec2 posB, box boxB)
+{
+	float distance = glm::length(posA - posB);
+
+	vec2 minB = posA - boxB.bounds;
+	vec2 maxB = posA + boxB.bounds;
+
+	float sum = circleA.radius + glm::sqrt(glm::pow(boxB.bounds.x, 2) + glm::pow(boxB.bounds.y, 2));
+	if (sum > distance)
+	{
+		return !(posA.x + circleA.radius < minB.x || posA.y + circleA.radius < minB.y ||
+			posA.x - circleA.radius > maxB.x || posA.y - circleA.radius > maxB.y);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool checkCircleBox(vec2 posA, collider circleA, vec2 posB, collider boxB)
+{
+	return checkCircleBox(posA, circleA.circleData, posB, boxB.boxData);
 }
 
 bool checkBoxBox(vec2 posA, box boxA, vec2 posB, box boxB)
@@ -46,20 +71,43 @@ vec2 depenetrateCircleCircle(vec2 posA, collider circleA, vec2 posB, collider ci
 	return depenetrateCircleCircle(posA, circleA.circleData, posB, circleB.circleData, pen);
 }
 
+vec2 depenetrateCircleBox(vec2 posA, circle circleA, vec2 posB, box boxB, float& pen)
+{
+	float distX = posA.x - posB.x;
+	float distY = posA.y - posB.y;
+	float sumX = circleA.radius + boxB.bounds.x;
+	float sumY = circleA.radius + boxB.bounds.y;
+
+	if (sumX - distX < sumY - distY)
+	{
+		pen = (sumX - distX) / 10;
+	}
+	else
+	{
+		pen = (sumY - distY) / 10;
+	}
+	return glm::normalize(posA - posB);
+}
+
+vec2 depenetrateCircleBox(vec2 posA, collider circleA, vec2 posB, collider boxB, float& pen)
+{
+	return depenetrateCircleBox(posA, circleA.circleData, posB, boxB.boxData, pen);
+}
+
 vec2 depenetrateBoxBox(vec2 posA, box boxA, vec2 posB, box boxB, float& pen)
 {
+	//float dist = glm::length(posA - posB);
 	float distX = posA.x - posB.x;
 	float distY = posA.y - posB.y;
 	float sumX = boxA.bounds.x + boxB.bounds.x;
 	float sumY = boxA.bounds.y + boxB.bounds.y;
-
-	if (sumX - distX < sumY - distY)
+	if (sumX - distX > sumY - distY)
 	{
-		pen = (sumX - distX);
+		pen = (sumX - distX) / 10;
 	}
 	else
 	{
-		pen = (sumY - distY);
+		pen = (sumY - distY) / 10;
 	}
 	return glm::normalize(posA - posB);
 }

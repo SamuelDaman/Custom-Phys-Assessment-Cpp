@@ -35,11 +35,17 @@ struct collider
 bool checkCircleCircle(vec2 posA, circle circleA, vec2 posB, circle circleB);
 bool checkCircleCircle(vec2 posA, collider circleA, vec2 posB, collider circleB);
 
+bool checkCircleBox(vec2 posA, circle circleA, vec2 posB, box boxB);
+bool checkCircleBox(vec2 posA, collider circleA, vec2 posB, collider boxB);
+
 bool checkBoxBox(vec2 posA, box boxA, vec2 posB, box boxB);
 bool checkBoxBox(vec2 posA, collider boxA, vec2 posB, collider boxB);
 
 vec2 depenetrateCircleCircle(vec2 posA, circle circleA, vec2 posB, circle circleB, float& pen);
 vec2 depenetrateCircleCircle(vec2 posA, collider circleA, vec2 posB, collider circleB, float& pen);
+
+vec2 depenetrateCircleBox(vec2 posA, circle circleA, vec2 posB, box boxB, float& pen);
+vec2 depenetrateCircleBox(vec2 posA, collider circleA, vec2 posB, collider boxB, float& pen);
 
 vec2 depenetrateBoxBox(vec2 posA, box boxA, vec2 posB, box boxB, float& pen);
 vec2 depenetrateBoxBox(vec2 posA, collider boxA, vec2 posB, collider boxB, float& pen);
