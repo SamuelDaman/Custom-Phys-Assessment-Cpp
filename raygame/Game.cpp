@@ -82,10 +82,10 @@ bool Game::tick()
 
 		for (auto& obj : PhysObjects)
 		{
-			auto* object = &obj;
-			if (glm::length(vec2(cursorPos.x, cursorPos.y) - object->pos) < 500)
+			auto * object = &obj;
+			if (glm::length(vec2(cursorPos.x, cursorPos.y) - object->pos) < 100)
 			{
-				obj.addImpulse(glm::normalize(object->pos - vec2(cursorPos.x, cursorPos.y)) * 500.0f);
+				obj.addImpulse(glm::normalize(object->pos - vec2(cursorPos.x, cursorPos.y)) * 5000.0f);
 			}
 		}
 	}
@@ -96,6 +96,13 @@ bool Game::tick()
 void Game::tickPhysics()
 {
 	accumulatedDeltaTime -= fixedTimeStep;
+
+	for (auto& obj : PhysObjects)
+	{
+		obj.addAccel(vec2(0, 98));
+		glm::clamp(obj.vel.x, -10.0f, 10.0f);
+		glm::clamp(obj.vel.y, -10.0f, 10.0f);
+	}
 
 	for (auto& lhs : PhysObjects)
 	{
@@ -132,12 +139,34 @@ void Game::tickPhysics()
 				second->vel = resImpulses[1];
 			}
 		}
-		lhs.addAccel(vec2(0, 98));
 	}
 
 	for (auto& obj : PhysObjects)
 	{
 		obj.tickPhysics(fixedTimeStep);
+	}
+
+	for (auto& obj : PhysObjects)
+	{
+		auto * object = &obj;
+		int scrWidth = GetScreenWidth();
+		int scrHeight = GetScreenHeight();
+		if (object->pos.x < -10)
+		{
+			object->pos.x = scrWidth + 10;
+		}
+		if (object->pos.x > scrWidth + 10)
+		{
+			object->pos.x = -10;
+		}
+		if (object->pos.y < -10)
+		{
+			object->pos.y = scrHeight + 10;
+		}
+		if (object->pos.y > scrHeight + 10)
+		{
+			object->pos.y = -10;
+		}
 	}
 }
 
